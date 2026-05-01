@@ -12,6 +12,9 @@ public class FirstPersonController : MonoBehaviour
     public float minLimit = -80f;
     public float maxLimit = 80;
 
+    // Altura de salto
+    public float jumpHeight = 0.7f;
+
     private PlayerInputActions _inputActions;
     private CharacterController _characterController;
 
@@ -37,11 +40,16 @@ public class FirstPersonController : MonoBehaviour
         //Mapeo principal del control de Player
         _inputActions.Player.Enable();
 
+        // MOVIMIENTOS DIRECCIONALES
         _inputActions.Player.Move.performed += SetMovement;
         _inputActions.Player.Move.canceled += obj => _movement = Vector2.zero;
 
+        // CAMARA
         _inputActions.Player.Look.performed += SetLook;
         _inputActions.Player.Look.canceled += obj => _look = Vector2.zero;
+
+        //SALTO
+        _inputActions.Player.Jump.performed += Jump;
     }
 
     private void SetMovement(InputAction.CallbackContext obj)
@@ -64,6 +72,10 @@ public class FirstPersonController : MonoBehaviour
         Vector3 move = transform.right * _movement.x + transform.forward * _movement.y;
         _characterController.Move(move * movementSpeed * Time.deltaTime);
 
+        // Reset de gravedad
+        if (_characterController.isGrounded && _velocity.y < 0)
+            _velocity.y = -2f;
+
         _velocity.y += gravity * Time.deltaTime;
         _characterController.Move(_velocity * Time.deltaTime);
     }
@@ -76,5 +88,13 @@ public class FirstPersonController : MonoBehaviour
 
         cameraTransform.localRotation = Quaternion.Euler(_currentRotationY, 0, 0);
         transform.Rotate(Vector3.up * _look.x);
+    }
+
+    private void Jump(InputAction.CallbackContext obj)
+    {
+        if (_characterController.isGrounded)
+        {
+            _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
     }
 }
