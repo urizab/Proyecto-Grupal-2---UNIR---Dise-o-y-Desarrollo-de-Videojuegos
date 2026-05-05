@@ -67,6 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Proyecto-Grupal-2---UNIR---Dise-o-y-Desarrollo-de-Videojuegos-main.slnx",
+    "dotnet.defaultSolution": "grupal enzo.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }
