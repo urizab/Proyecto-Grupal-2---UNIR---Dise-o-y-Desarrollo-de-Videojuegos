@@ -14,9 +14,17 @@ public class FirstPersonController : MonoBehaviour
     public float minLimit = -80f;         // Límite inferior de rotación vertical de la cámara
     public float maxLimit = 80;           // Límite superior de rotación vertical de la cámara
 
+    // ── DOBLE SALTO
+    [Header("Doble Salto")]
+    [Tooltip("Agua mínima en el tanque para poder hacer el doble salto.")]
+    public float waterCostForDoubleJump = 100f;
+    [Tooltip("Agua que se consume al hacer el doble salto.")]
+    public float waterDrainOnDoubleJump = 100f;
+
     // ── REFERENCIAS PRIVADAS
     private PlayerInputActions _inputActions;       // Sistema de input del jugador
     private CharacterController _characterController; // Componente de movimiento del personaje
+    private WaterTank _waterTank;                   // Almacenaje de agua y tal
 
     // ── VARIABLES DE ESTADO
     private Vector2 _movement;          // Dirección de movimiento (WASD)
@@ -24,12 +32,20 @@ public class FirstPersonController : MonoBehaviour
     private Vector2 _look;              // Dirección del ratón
     private float _currentRotationY;   // Rotación vertical actual de la cámara
 
+    // ── ESTADO DEL SALTO
+    private bool _isGrounded;
+    private bool _hasDoubleJumped = false;   // Controla que solo se haga UN doble salto por vuelo
+
     // ── INICIALIZACIÓN
     private void Awake()
     {
         // Obtener componentes antes de que empiece el juego
         _inputActions = new PlayerInputActions();
         _characterController = GetComponent<CharacterController>();
+        _waterTank = GetComponent<WaterTank>();
+
+        if (_waterTank == null)
+            Debug.LogWarning("[FirstPersonController] No se encontró WaterTank en el Player.");
     }
 
     private void Start()
@@ -52,18 +68,10 @@ public class FirstPersonController : MonoBehaviour
     }
 
     // ── LECTURA DE INPUT
-
     // Guarda la dirección de movimiento cuando se pulsa una tecla
-    private void SetMovement(InputAction.CallbackContext obj)
-    {
-        _movement = obj.ReadValue<Vector2>();
-    }
-
+    private void SetMovement(InputAction.CallbackContext obj) => _movement = obj.ReadValue<Vector2>();
     // Guarda la dirección del ratón cuando se mueve
-    private void SetLook(InputAction.CallbackContext obj)
-    {
-        _look = obj.ReadValue<Vector2>();
-    }
+    private void SetLook(InputAction.CallbackContext obj) => _look = obj.ReadValue<Vector2>();
 
     // ── BUCLE PRINCIPAL
     private void Update()
@@ -76,12 +84,16 @@ public class FirstPersonController : MonoBehaviour
     private void Movement()
     {
         // Calcular dirección de movimiento horizontal según la orientación del personaje
+        _isGrounded = _characterController.isGrounded;
+
         Vector3 move = transform.right * _movement.x + transform.forward * _movement.y;
         _characterController.Move(move * movementSpeed * Time.deltaTime);
 
-        // Resetear velocidad vertical al tocar el suelo para evitar acumulación infinita
-        if (_characterController.isGrounded && _velocity.y < 0)
+        if (_isGrounded && _velocity.y < 0)
+        {
             _velocity.y = -2f;
+            _hasDoubleJumped = false;   // Resetear el doble salto al tocar el suelo
+        }
 
         // Acumular gravedad con el tiempo
         _velocity.y += gravity * Time.deltaTime;
@@ -99,19 +111,38 @@ public class FirstPersonController : MonoBehaviour
         // Calcular y limitar la rotación vertical de la cámara (mirar arriba/abajo)
         _currentRotationY = Mathf.Clamp(_currentRotationY - mouseNormalized.y, minLimit, maxLimit);
         cameraTransform.localRotation = Quaternion.Euler(_currentRotationY, 0, 0);
-
-        // Rotar el cuerpo del personaje horizontalmente (mirar izquierda/derecha)
         transform.Rotate(Vector3.up * _look.x);
     }
 
-    // ── SALTO
+    // ── SALTO + DOBLE SALTO
     private void Jump(InputAction.CallbackContext obj)
     {
-        // Solo saltar si el personaje está en el suelo
-        if (_characterController.isGrounded)
+        // ── Salto normal: en el suelo
+        if (_isGrounded)
         {
-            // Fórmula física para convertir altura deseada en velocidad inicial de salto
             _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            return;
         }
+
+        // ── Doble salto: en el aire, sin haber usado ya el doble salto,
+        //    y con suficiente agua en el tanque
+        if (!_hasDoubleJumped && CanDoubleJump()) // si quiero doble salto ilimitado dejar solo CanDoubleJump()
+        {
+            _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            _hasDoubleJumped = true;
+
+            // Consumir agua del tanque
+            _waterTank.Drain(waterDrainOnDoubleJump);
+
+            Debug.Log($"[FirstPersonController] Doble salto. Agua restante: {_waterTank.CurrentWater:F0}");
+        }
+    }
+
+    // ── COMPRUEBA SI SE PUEDE HACER EL DOBLE SALTO
+    private bool CanDoubleJump()
+    {
+        if (_waterTank == null) return false;
+        if (_waterTank.CurrentWater < waterCostForDoubleJump) return false;
+        return true;
     }
 }
