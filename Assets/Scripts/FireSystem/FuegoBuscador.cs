@@ -3,7 +3,10 @@ using UnityEngine;
 /// <summary>
 /// Controla el movimiento de un fuego secundario que persigue al jugador
 /// bajo ciertas restricciones de ejes. Resta agua al jugador al impactar.
+/// Integrado con el sistema oficial WaterTank del proyecto.
+/// Asegura configuración física autónoma en escena.
 /// </summary>
+[RequireComponent(typeof(Collider))]
 public class FuegoBuscador : MonoBehaviour
 {
     public enum RestriccionMovimiento
@@ -52,6 +55,23 @@ public class FuegoBuscador : MonoBehaviour
                 objetivo = controladorJugador.transform;
             }
         }
+
+        // ── CONFIGURACIÓN FÍSICA AUTOMÁTICA
+        // Asegurar que el collider esté en modo Trigger
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+        {
+            col.isTrigger = true;
+        }
+
+        // Configurar un Rigidbody Cinemático automático para garantizar disparadores físicos
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
+        rb.isKinematic = true;
+        rb.useGravity = false;
     }
 
     private void Update()
@@ -98,30 +118,36 @@ public class FuegoBuscador : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // Si el jugador choca físicamente antes de que alcance la distanciaParada
-        if (other.TryGetComponent<DisparadorAgua>(out var disparador))
+        if (other.GetComponent<WaterTank>() != null || other.GetComponentInParent<WaterTank>() != null)
         {
             ImpactarJugador();
         }
     }
 
-
+    /// <summary>
     /// Simula el impacto del fuego contra el jugador y le drena agua.
-
+    /// </summary>
     private void ImpactarJugador()
     {
         if (_yaImpacto) return;
         _yaImpacto = true;
 
         // Restar agua al jugador si se encuentra disponible
-        if (objetivo != null && objetivo.TryGetComponent<DisparadorAgua>(out var disparador))
+        WaterTank tanque = null;
+        if (objetivo != null)
         {
-            disparador.RestarAgua(penalizacionAgua);
+            tanque = objetivo.GetComponent<WaterTank>() ?? objetivo.GetComponentInParent<WaterTank>();
         }
-        else if (Camera.main != null && Camera.main.transform.parent != null)
+
+        if (tanque == null)
         {
-            // Fallback por si el componente está en el parent del collider que colisionó
-            var disp = GetComponentInParent<DisparadorAgua>() ?? FindFirstObjectByType<DisparadorAgua>();
-            if (disp != null) disp.RestarAgua(penalizacionAgua);
+            tanque = FindFirstObjectByType<WaterTank>();
+        }
+
+        if (tanque != null)
+        {
+            tanque.Drain(penalizacionAgua);
+            Debug.Log($"[FuegoBuscador] Impacto en jugador. Se drenaron {penalizacionAgua} unidades de agua del WaterTank.");
         }
 
         // Detener partículas suavemente

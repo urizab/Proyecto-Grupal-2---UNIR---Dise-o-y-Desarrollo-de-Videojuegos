@@ -5,13 +5,14 @@ using System.Collections.Generic;
 /// Sistema de fuego simplificado que reduce su tamaño al recibir agua
 /// y se destruye al apagarse por completo.
 /// Incluye spawneo de fuegos buscadores y penalización al agua del jugador por contacto.
+/// Integrado con el sistema oficial WaterTank del proyecto.
 /// </summary>
 public class FuegoExtinguible : MonoBehaviour
 {
     [Header("── CONFIGURACIÓN BÁSICA")]
     [Tooltip("Intensidad o tamaño inicial del fuego.")]
     public float intensidadMaxima = 100f;
-    
+
     [Tooltip("Intensidad actual del fuego.")]
     public float intensidadActual;
 
@@ -43,7 +44,7 @@ public class FuegoExtinguible : MonoBehaviour
 
     private Vector3 _escalaOriginal;
     private ParticleSystem[] _particulas;
-    
+
     // Control de Spawneo
     private Transform _jugador;
     private float _temporizadorSpawn = 0f;
@@ -102,9 +103,9 @@ public class FuegoExtinguible : MonoBehaviour
         }
     }
 
-
+    /// <summary>
     /// Spawnea una pequeña llama y le añade y configura el comportamiento buscador.
-
+    /// </summary>
     private void SpawnearFuegoBuscador()
     {
         GameObject instanciado = Instantiate(prefabFuegoBuscador, transform.position, Quaternion.identity);
@@ -123,12 +124,15 @@ public class FuegoExtinguible : MonoBehaviour
         _spawnsActivos.Add(instanciado);
     }
 
-
+    /// <summary>
     /// Recibe una cantidad de agua que apaga y encoge el fuego progresivamente.
-
+    /// </summary>
     public void RecibirAgua(float cantidad)
     {
         if (_estaExtinguido) return;
+
+        Debug.Log($"[FuegoExtinguible] Recibió {cantidad:F2} agua.");
+        Debug.Log($"[FuegoExtinguible] Intensidad antes: {intensidadActual:F2} → ");
 
         intensidadActual -= cantidad;
 
@@ -144,9 +148,9 @@ public class FuegoExtinguible : MonoBehaviour
         }
     }
 
-
+    /// <summary>
     /// Actualiza la escala del objeto y la emisión de partículas.
-
+    /// </summary>
     private void ActualizarFuego()
     {
         float ratio = intensidadActual / intensidadMaxima;
@@ -164,9 +168,9 @@ public class FuegoExtinguible : MonoBehaviour
         }
     }
 
-
+    /// <summary>
     /// Apaga el fuego deteniendo las partículas y destruyendo el objeto.
-
+    /// </summary>
     private void ApagarFuego()
     {
         _estaExtinguido = true;
@@ -204,10 +208,11 @@ public class FuegoExtinguible : MonoBehaviour
     {
         if (_estaExtinguido) return;
 
-        // Si el jugador permanece dentro del fuego, drenar sus reservas progresivamente
-        if (other.TryGetComponent<DisparadorAgua>(out var disparador))
+        // Si el jugador permanece dentro del fuego, drenar sus reservas de WaterTank progresivamente
+        WaterTank tanque = other.GetComponent<WaterTank>() ?? other.GetComponentInParent<WaterTank>();
+        if (tanque != null)
         {
-            disparador.RestarAgua(penalizacionAguaAlJugador * Time.deltaTime);
+            tanque.Drain(penalizacionAguaAlJugador * Time.deltaTime);
         }
     }
 }

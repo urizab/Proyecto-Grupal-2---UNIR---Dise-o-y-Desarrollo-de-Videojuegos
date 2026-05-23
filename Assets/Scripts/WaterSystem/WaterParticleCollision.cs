@@ -50,15 +50,15 @@ public class WaterParticleCollision : MonoBehaviour
 
         // Comprueba si el objeto golpeado tiene el script del fuego
         // Sustir "FireScript" por el nombre real del script de Uri
-       /* var fire = other.GetComponent<FireScript>();
+        var fire = other.GetComponent<FuegoExtinguible>();
 
         if (fire != null)
         {
             // Aplicar agua proporcional al número de partículas que impactaron
             float totalWater = waterPerParticle * count;
-            fire.ReceiveWater(totalWater);
+            fire.RecibirAgua(totalWater);
 
             Debug.Log($"[WaterParticleCollision] {count} partículas golpearon {other.name} → {totalWater:F2} agua aplicada.");
-        }*/
+        }
     }
 }
