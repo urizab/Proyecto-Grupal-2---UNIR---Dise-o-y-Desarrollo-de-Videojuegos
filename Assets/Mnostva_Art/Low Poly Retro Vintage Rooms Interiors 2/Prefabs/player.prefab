@@ -1519,7 +1519,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3000
+      scalar: 1000
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -5498,7 +5498,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterParticleCollision
   playerTank: {fileID: 3533837725791118629}
-  waterPerParticle: 100
+  waterPerParticle: 0.05
 --- !u!1 &7606528674339515177
 GameObject:
   m_ObjectHideFlags: 0
@@ -5639,6 +5639,8 @@ MonoBehaviour:
   sensitivity: 0.5
   minLimit: -80
   maxLimit: 80
+  waterCostForDoubleJump: 100
+  waterDrainOnDoubleJump: 100
 --- !u!143 &4440551677568616398
 CharacterController:
   m_ObjectHideFlags: 0

@@ -59,7 +59,7 @@ public class WaterUI : MonoBehaviour
 
         // Usa la cantidad de agua actual y la maxima del tanque de agua del player
         if (waterLabel != null)
-            waterLabel.text = $"{Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)} L";
+            waterLabel.text = $"{Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)} ml";
 
         if (fillImage != null)
         {
