@@ -11,7 +11,7 @@ using UnityEngine.InputSystem;
 public class WaterHose : MonoBehaviour
 {
     [Header("Referencias")]
-    public ParticleSystem waterParticles;     // Arrastrar el WaterJet
+    public ParticleSystem waterParticles;     // Arrastrar el WaterJet del player
 
     [Header("Detección de fuente de agua")]
     public float refillDetectionRadius = 3f;
@@ -21,9 +21,7 @@ public class WaterHose : MonoBehaviour
     private PlayerInputActions _inputActions;
     private bool _isFiring = false;
 
-    // ─────────────────────────────────────────────
-    //  INICIALIZACIÓN
-    // ─────────────────────────────────────────────
+    // ── INICIALIZACIÓN
 
     private void Awake()
     {
@@ -47,9 +45,7 @@ public class WaterHose : MonoBehaviour
         _inputActions.Player.Disable();
     }
 
-    // ─────────────────────────────────────────────
-    //  CALLBACKS DE INPUT
-    // ─────────────────────────────────────────────
+    // ── CALLBACKS DE INPUT
 
     private void OnFireStarted(InputAction.CallbackContext ctx)
     {
@@ -73,9 +69,7 @@ public class WaterHose : MonoBehaviour
             Debug.Log("[WaterHose] No hay fuente de agua cerca.");
     }
 
-    // ─────────────────────────────────────────────
-    //  BUCLE PRINCIPAL
-    // ─────────────────────────────────────────────
+    // ── BUCLE PRINCIPAL
 
     private void Update()
     {
@@ -92,9 +86,7 @@ public class WaterHose : MonoBehaviour
         _tank.Drain(_tank.drainRate * Time.deltaTime);
     }
 
-    // ─────────────────────────────────────────────
-    //  CONTROL DEL CHORRO
-    // ─────────────────────────────────────────────
+    // ── CONTROL DEL CHORRO
 
     private void StartHose()
     {
@@ -108,9 +100,7 @@ public class WaterHose : MonoBehaviour
             waterParticles.Stop();
     }
 
-    // ─────────────────────────────────────────────
-    //  BÚSQUEDA DE FUENTE CERCANA
-    // ─────────────────────────────────────────────
+    // ── BÚSQUEDA DE FUENTE CERCANA
 
     private WaterSource FindNearbySource()
     {
@@ -123,9 +113,7 @@ public class WaterHose : MonoBehaviour
         return null;
     }
 
-    // ─────────────────────────────────────────────
-    //  GIZMO
-    // ─────────────────────────────────────────────
+    // ── GIZMO
 
     private void OnDrawGizmosSelected()
     {

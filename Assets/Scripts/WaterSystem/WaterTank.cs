@@ -36,9 +36,7 @@ public class WaterTank : MonoBehaviour
             Fill(fillRate * Time.deltaTime);
     }
 
-    // ─────────────────────────────────────────────
-    //  API PÚBLICA
-    // ─────────────────────────────────────────────
+    // ── API PÚBLICA
 
     /// <summary>Añade agua al tanque.</summary>
     public void Fill(float amount)

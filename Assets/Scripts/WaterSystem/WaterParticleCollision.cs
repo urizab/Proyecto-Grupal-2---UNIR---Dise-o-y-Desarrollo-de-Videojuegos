@@ -10,7 +10,7 @@ using System.Collections.Generic;
 public class WaterParticleCollision : MonoBehaviour
 {
     [Header("Referencias")]
-    public WaterTank playerTank;          // Arrastrar el WaterTank del Player
+    public WaterTank playerTank;          // Arrastrar el WaterTank del Player para que funcione
 
     [Header("Daño por partícula")]
     [Tooltip("Agua que se aplica al fuego por cada partícula que impacta.")]
@@ -20,9 +20,7 @@ public class WaterParticleCollision : MonoBehaviour
     private List<ParticleCollisionEvent> _collisionEvents = new List<ParticleCollisionEvent>();
     private ParticleSystem _ps;
 
-    // ─────────────────────────────────────────────
-    //  INICIALIZACIÓN
-    // ─────────────────────────────────────────────
+    // ── INICIALIZACIÓN
 
     private void Awake()
     {
@@ -36,9 +34,7 @@ public class WaterParticleCollision : MonoBehaviour
             Debug.LogError("[WaterParticleCollision] No se encontró WaterTank en el padre.");
     }
 
-    // ─────────────────────────────────────────────
-    //  DETECCIÓN DE COLISIÓN DE PARTÍCULAS
-    // ─────────────────────────────────────────────
+    // ── DETECCIÓN DE COLISIÓN DE PARTÍCULAS
 
     /// <summary>
     /// Unity llama a este método en el GameObject que RECIBE el impacto
@@ -52,8 +48,8 @@ public class WaterParticleCollision : MonoBehaviour
 
         if (count == 0) return;
 
-        // ¿El objeto golpeado tiene el script del fuego?
-        // → Sustituye "FireScript" por el nombre real del script de tu compañero
+        // Comprueba si el objeto golpeado tiene el script del fuego
+        // Sustir "FireScript" por el nombre real del script de Uri
        /* var fire = other.GetComponent<FireScript>();
 
         if (fire != null)

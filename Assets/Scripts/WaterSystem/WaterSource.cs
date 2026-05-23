@@ -23,9 +23,7 @@ public class WaterSource : MonoBehaviour
     // ── Propiedad pública para que WaterHose sepa si hay jugador cerca
     public bool PlayerInRange => _playerTank != null;
 
-    // ─────────────────────────────────────────────
-    //  INICIALIZACIÓN
-    // ─────────────────────────────────────────────
+    // ── INICIALIZACIÓN
 
     private void Awake()
     {
@@ -36,9 +34,7 @@ public class WaterSource : MonoBehaviour
             interactPrompt.SetActive(false);
     }
 
-    // ─────────────────────────────────────────────
-    //  BUCLE PRINCIPAL
-    // ─────────────────────────────────────────────
+    // ── BUCLE PRINCIPAL
 
     private void Update()
     {
@@ -64,9 +60,7 @@ public class WaterSource : MonoBehaviour
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  API PÚBLICA — llamada desde WaterHose
-    // ─────────────────────────────────────────────
+    // ─── API PÚBLICA 
 
     /// <summary>
     /// WaterHose llama esto cuando el jugador pulsa la tecla Refill
@@ -79,9 +73,7 @@ public class WaterSource : MonoBehaviour
         else StartRefill();
     }
 
-    // ─────────────────────────────────────────────
-    //  TRIGGER DE PROXIMIDAD
-    // ─────────────────────────────────────────────
+    // ── TRIGGER DE PROXIMIDAD
 
     private void OnTriggerEnter(Collider other)
     {
@@ -109,9 +101,8 @@ public class WaterSource : MonoBehaviour
         Debug.Log("[WaterSource] Jugador fuera del rango.");
     }
 
-    // ─────────────────────────────────────────────
-    //  CONTROL DE RECARGA (privado)
-    // ─────────────────────────────────────────────
+    // ── CONTROL DE RECARGA (privado)
+
 
     private void StartRefill()
     {
@@ -129,9 +120,7 @@ public class WaterSource : MonoBehaviour
         Debug.Log("[WaterSource] Recarga detenida.");
     }
 
-    // ─────────────────────────────────────────────
-    //  GIZMOS
-    // ─────────────────────────────────────────────
+    // ── GIZMOS
 
     private void OnDrawGizmos()
     {

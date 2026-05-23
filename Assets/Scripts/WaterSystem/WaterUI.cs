@@ -21,9 +21,8 @@ public class WaterUI : MonoBehaviour
     [Range(0f, 1f)]
     public float lowThreshold = 0.25f;
 
-    // ─────────────────────────────────────────────
-    //  INICIALIZACIÓN
-    // ─────────────────────────────────────────────
+    // ── INICIALIZACIÓN
+
 
     private void Start()
     {
@@ -44,9 +43,8 @@ public class WaterUI : MonoBehaviour
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  ACTUALIZACIÓN
-    // ─────────────────────────────────────────────
+    // ── ACTUALIZACIÓN
+
 
     public void UpdateUI(float current, float max)
     {
@@ -59,6 +57,7 @@ public class WaterUI : MonoBehaviour
             waterSlider.value = current;
         }
 
+        // Usa la cantidad de agua actual y la maxima del tanque de agua del player
         if (waterLabel != null)
             waterLabel.text = $"{Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)} L";
 
