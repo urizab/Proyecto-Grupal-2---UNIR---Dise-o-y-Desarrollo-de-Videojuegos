@@ -236,11 +236,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1811241960}
   m_SourcePrefab: {fileID: 100100000, guid: 8a915097b935642d582150d1bedf9222, type: 3}
---- !u!1 &561403634 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8661959950368182712, guid: 91a4213c680bd4b82a0ab4ed97a15356, type: 3}
-  m_PrefabInstance: {fileID: 1683001976}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &625189525
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -424,7 +419,7 @@ GameObject:
   - component: {fileID: 966523380}
   - component: {fileID: 966523379}
   - component: {fileID: 966523378}
-  - component: {fileID: 966523377}
+  - component: {fileID: 966523382}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -432,21 +427,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &966523377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 966523376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e12f377e07819bc4c97bedb89abad7f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WaterSource
-  autoRefill: 0
-  supply: -1
-  interactPrompt: {fileID: 561403634}
 --- !u!65 &966523378
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -466,8 +446,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3.9035456, y: 4.0307145, z: 3.950401}
+  m_Center: {x: 0.052421536, y: -0.11586057, z: 0.068797514}
 --- !u!23 &966523379
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -540,6 +520,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &966523382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 966523376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e12f377e07819bc4c97bedb89abad7f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterSource
+  supply: -1
+  interactPrompt: {fileID: 0}
 --- !u!1 &1042256438
 GameObject:
   m_ObjectHideFlags: 0
@@ -1079,6 +1073,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 557061926609572114, guid: 0349d1f8e264d6f49aa5a77409648943, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1865176202248358107, guid: 0349d1f8e264d6f49aa5a77409648943, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3918371584418910813, guid: 0349d1f8e264d6f49aa5a77409648943, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4407583637341666345, guid: 0349d1f8e264d6f49aa5a77409648943, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6480332208121302342, guid: 0349d1f8e264d6f49aa5a77409648943, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7606528674339515177, guid: 0349d1f8e264d6f49aa5a77409648943, type: 3}
