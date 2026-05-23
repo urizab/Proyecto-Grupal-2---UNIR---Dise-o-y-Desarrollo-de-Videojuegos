@@ -118,6 +118,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""3b304609-55fe-4519-ae4e-ef20c9bee962"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Refill"",
+                    ""type"": ""Button"",
+                    ""id"": ""7cf987af-e2b2-4dc9-94be-936589bf7eb5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -208,6 +226,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a5ea4f33-529e-447d-9f4f-dcf6bb7ff604"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7c4f771c-15df-4a21-ac6d-8d15decaf55b"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Refill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -219,6 +259,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_Refill = m_Player.FindAction("Refill", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -302,6 +344,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_Refill;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -325,6 +369,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Jump".
         /// </summary>
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Fire".
+        /// </summary>
+        public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Refill".
+        /// </summary>
+        public InputAction @Refill => m_Wrapper.m_Player_Refill;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -360,6 +412,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
+            @Refill.started += instance.OnRefill;
+            @Refill.performed += instance.OnRefill;
+            @Refill.canceled += instance.OnRefill;
         }
 
         /// <summary>
@@ -380,6 +438,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
+            @Refill.started -= instance.OnRefill;
+            @Refill.performed -= instance.OnRefill;
+            @Refill.canceled -= instance.OnRefill;
         }
 
         /// <summary>
@@ -441,5 +505,19 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnJump(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Fire" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFire(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Refill" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRefill(InputAction.CallbackContext context);
     }
 }
