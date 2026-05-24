@@ -2,31 +2,33 @@
 using System.Collections.Generic;
 
 /// <summary>
+/// Detecta cuando las partículas del chorro de agua golpean un objeto
+/// y notifica al fuego o a cualquier WaterReceiver.
 /// Añadir al mismo GameObject que el Particle System del chorro (WaterJet).
-/// Detecta cuando las partículas impactan y notifica al fuego.
-/// Requiere que el módulo Collision del Particle System tenga
-/// "Send Collision Messages" activado.
+/// IMPORTANTE: el módulo Collision del Particle System debe tener
+/// "Send Collision Messages" activado para que esto funcione.
 /// </summary>
 public class WaterParticleCollision : MonoBehaviour
 {
+    // ── REFERENCIAS
     [Header("Referencias")]
-    public WaterTank playerTank;          // Arrastrar el WaterTank del Player para que funcione
+    public WaterTank playerTank;   // El tanque de agua del jugador (se busca automáticamente si se deja vacío)
 
+    // ── CONFIGURACIÓN
     [Header("Daño por partícula")]
-    [Tooltip("Agua que se aplica al fuego por cada partícula que impacta.")]
+    [Tooltip("Agua que se aplica por cada partícula que impacta.")]
     public float waterPerParticle = 0.5f;
 
-    // Buffer reutilizable para evitar allocations en cada frame
+    // ── PRIVADOS
+    // Lista reutilizable para los eventos de colisión — evita crear basura en memoria cada frame
     private List<ParticleCollisionEvent> _collisionEvents = new List<ParticleCollisionEvent>();
     private ParticleSystem _ps;
 
     // ── INICIALIZACIÓN
-
     private void Awake()
     {
         _ps = GetComponent<ParticleSystem>();
 
-        // Buscar el WaterTank automáticamente si no se asignó
         if (playerTank == null)
             playerTank = GetComponentInParent<WaterTank>();
 
@@ -37,28 +39,31 @@ public class WaterParticleCollision : MonoBehaviour
     // ── DETECCIÓN DE COLISIÓN DE PARTÍCULAS
 
     /// <summary>
-    /// Unity llama a este método en el GameObject que RECIBE el impacto
-    /// Y también en el GameObject que TIENE el Particle System.
-    /// Aquí lo gestionamos desde el lado del Particle System.
+    /// Unity llama a este método automáticamente cuando una partícula
+    /// colisiona con otro objeto que tiene Collider.
     /// </summary>
-    private void OnParticleCollision(GameObject other)
+    public void OnParticleCollision(GameObject other)
     {
-        // Obtener todos los eventos de colisión de este frame
+        // Obtener cuántas partículas golpearon este objeto en este frame
         int count = ParticlePhysicsExtensions.GetCollisionEvents(_ps, other, _collisionEvents);
-
         if (count == 0) return;
 
-        // Comprueba si el objeto golpeado tiene el script del fuego
-        // Sustir "FireScript" por el nombre real del script de Uri
-        var fire = other.GetComponent<Fuego>();
+        // Calcular el agua total según cuántas partículas impactaron este frame
+        float totalAgua = waterPerParticle * count;
 
-        if (fire != null)
+        // ── ¿Es un fuego? → apagarlo
+        Fuego fuego = other.GetComponent<Fuego>();
+        if (fuego != null)
         {
-            // Aplicar agua proporcional al número de partículas que impactaron
-            float totalWater = waterPerParticle * count;
-            fire.RecibirAgua(totalWater);
+            fuego.RecibirAgua(totalAgua);
+            Debug.Log($"[WaterParticleCollision] {count} partículas golpearon fuego {other.name} → {totalAgua:F2} agua.");
+        }
 
-            Debug.Log($"[WaterParticleCollision] {count} partículas golpearon {other.name} → {totalWater:F2} agua aplicada.");
+        // ── ¿Es un objeto con WaterReceiver? → acumular agua y activar acción
+        WaterReceiver receptor = other.GetComponent<WaterReceiver>();
+        if (receptor != null)
+        {
+            receptor.ReceiveWater(totalAgua);
         }
     }
 }
