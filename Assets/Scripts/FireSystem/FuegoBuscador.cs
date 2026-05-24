@@ -33,11 +33,16 @@ public class FuegoBuscador : Fuego
 
     private float _tiempoSpawn;
     private bool _yaImpacto = false;
+    private bool _estaAtrapado = false;
+    private float _tasaDecaimiento = 0f;
 
     protected override void Start()
     {
         _tiempoSpawn = Time.time;
         
+        // Configurar intensidad máxima específica para el fuego buscador (50 puntos de salud)
+        intensidadMaxima = 50f;
+
         // Deshabilitar explícitamente la regeneración de intensidad para flamas buscadoras
         puedeRegenerarse = false;
 
@@ -63,7 +68,26 @@ public class FuegoBuscador : Fuego
         // Ejecutar la lógica de la clase base (Update de regeneración, aunque esté en false)
         base.Update();
 
-        if (objetivo == null || _yaImpacto || estaExtinguido) return;
+        if (estaExtinguido || _yaImpacto) return;
+
+        if (_estaAtrapado)
+        {
+            // Reducir la intensidad gradualmente para que se encoja durante 10 segundos hasta extinguirse
+            intensidadActual -= _tasaDecaimiento * Time.deltaTime;
+
+            if (intensidadActual <= umbralExtincion)
+            {
+                intensidadActual = 0f;
+                ApagarFuego();
+            }
+            else
+            {
+                ActualizarFuego();
+            }
+            return;
+        }
+
+        if (objetivo == null) return;
 
         // Calcular dirección hacia el jugador
         Vector3 posicionObjetivo = objetivo.position;
@@ -87,10 +111,28 @@ public class FuegoBuscador : Fuego
 
         // Moverse hacia la posición calculada
         Vector3 direccion = (posicionObjetivo - posicionActual).normalized;
-        transform.position += direccion * velocidad * Time.deltaTime;
+        float distanciaMovimiento = velocidad * Time.deltaTime;
 
-        if (direccion != Vector3.zero)
+        // Evitar atravesar paredes y obstáculos sólidos usando un SphereCast
+        float radioDeteccion = 0.3f; // Radio aproximado del buscador
+        radioDeteccion *= Mathf.Max(transform.localScale.x, 0.1f); // Ajustar según escala local
+
+        if (Physics.SphereCast(posicionActual, radioDeteccion, direccion, out RaycastHit hit, distanciaMovimiento + 0.05f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
+            // Si el objeto chocado es el jugador (el objetivo), le permitimos avanzar para que ocurra la colisión
+            bool esJugador = hit.transform == objetivo || hit.collider.GetComponentInParent<WaterTank>() != null;
+
+            if (!esJugador)
+            {
+                // Es un obstáculo sólido (pared, mueble, etc.). Quedamos atrapados.
+                QuedarAtrapado();
+                return;
+            }
+        }
+
+        if (distanciaMovimiento > 0f && direccion != Vector3.zero)
+        {
+            transform.position += direccion * distanciaMovimiento;
             transform.rotation = Quaternion.LookRotation(direccion);
         }
 
@@ -103,6 +145,22 @@ public class FuegoBuscador : Fuego
         }
     }
 
+    /// <summary>
+    /// Activa el estado atrapado, calculando la tasa de decaimiento necesaria 
+    /// para extinguirse reduciendo su tamaño a lo largo de exactamente 10 segundos.
+    /// </summary>
+    private void QuedarAtrapado()
+    {
+        if (_estaAtrapado || estaExtinguido || _yaImpacto) return;
+        _estaAtrapado = true;
+
+        // Calcular la tasa para ir de la intensidad actual a la de extinción en exactamente 10 segundos
+        float rangoIntensidad = Mathf.Max(0f, intensidadActual - umbralExtincion);
+        _tasaDecaimiento = rangoIntensidad > 0f ? (rangoIntensidad / 10f) : 1f;
+
+        Debug.Log($"[CONSOLA FUEGO BUSCADOR: {gameObject.name}] Se ha chocado con un obstáculo sólido. Queda atrapado y se extinguirá en 10 segundos.");
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (estaExtinguido || _yaImpacto) return;
@@ -112,6 +170,13 @@ public class FuegoBuscador : Fuego
         if (tanque != null)
         {
             ImpactarJugador(tanque);
+            return;
+        }
+
+        // Si colisiona con cualquier objeto sólido (que no sea un trigger y no sea el jugador)
+        if (!_estaAtrapado && !other.isTrigger && other.transform != objetivo)
+        {
+            QuedarAtrapado();
         }
     }
 
@@ -152,6 +217,24 @@ public class FuegoBuscador : Fuego
         estaExtinguido = true;
         transform.localScale = Vector3.zero;
 
+        // Detener sonido de agua de inmediato
+        if (_audioSourceAgua != null)
+        {
+            _audioSourceAgua.Stop();
+        }
+
+        // Apagar todas las luces de iluminación de inmediato
+        if (_lucesCache != null)
+        {
+            foreach (var cache in _lucesCache)
+            {
+                if (cache.light != null)
+                {
+                    cache.light.enabled = false;
+                }
+            }
+        }
+
         ParticleSystem[] particulas = GetComponentsInChildren<ParticleSystem>();
         foreach (var ps in particulas)
         {
@@ -170,6 +253,24 @@ public class FuegoBuscador : Fuego
         if (estaExtinguido) return;
         estaExtinguido = true;
         transform.localScale = Vector3.zero;
+
+        // Detener sonido de agua de inmediato
+        if (_audioSourceAgua != null)
+        {
+            _audioSourceAgua.Stop();
+        }
+
+        // Apagar todas las luces de iluminación de inmediato
+        if (_lucesCache != null)
+        {
+            foreach (var cache in _lucesCache)
+            {
+                if (cache.light != null)
+                {
+                    cache.light.enabled = false;
+                }
+            }
+        }
 
         ParticleSystem[] particulas = GetComponentsInChildren<ParticleSystem>();
         foreach (var ps in particulas)
