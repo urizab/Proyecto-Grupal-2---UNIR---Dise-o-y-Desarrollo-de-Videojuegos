@@ -1,12 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// Fuego de tipo Buscador. Hereda de Fuego.
-/// Persigue de forma activa al jugador respetando restricciones de ejes,
-/// explotando y drenando agua al entrar en contacto o cercanía.
-/// No se regenera.
+/// Controla el movimiento de un fuego secundario que persigue al jugador
+/// bajo ciertas restricciones de ejes. Resta agua al jugador al impactar.
+/// Integrado con el sistema oficial WaterTank del proyecto.
+/// Asegura configuración física autónoma en escena.
 /// </summary>
-public class FuegoBuscador : Fuego
+[RequireComponent(typeof(Collider))]
+public class FuegoBuscador : MonoBehaviour
 {
     public enum RestriccionMovimiento
     {
@@ -15,7 +16,7 @@ public class FuegoBuscador : Fuego
         SoloEjeY          // Solo movimiento vertical (se mueve de arriba a abajo)
     }
 
-    [Header("── CONFIGURACIÓN DEL BUSCADOR")]
+    [Header("── MOVIMIENTO")]
     [Tooltip("Objetivo a perseguir (el jugador).")]
     public Transform objetivo;
 
@@ -25,29 +26,27 @@ public class FuegoBuscador : Fuego
     [Tooltip("Restricción del plano o eje de movimiento.")]
     public RestriccionMovimiento restriccionMovimiento = RestriccionMovimiento.SoloPlanoXZ;
 
-    [Tooltip("Distancia mínima al jugador para explotar/impactar.")]
+    [Tooltip("Distancia mínima al jugador para auto-destruirse.")]
     public float distanciaParada = 0.8f;
 
     [Tooltip("Tiempo de vida máximo en segundos antes de disiparse solo.")]
     public float tiempoVida = 6f;
 
+    [Header("── DAÑO / PENALIZACIÓN")]
+    [Tooltip("Cantidad de agua que pierde el jugador al ser golpeado por este fuego.")]
+    public float penalizacionAgua = 15f;
+
     private float _tiempoSpawn;
     private bool _yaImpacto = false;
 
-    protected override void Start()
+    private void Start()
     {
         _tiempoSpawn = Time.time;
-        
-        // Deshabilitar explícitamente la regeneración de intensidad para flamas buscadoras
-        puedeRegenerarse = false;
-
-        // Ejecutar inicialización de la clase base Fuego (detección de escala original, etc.)
-        base.Start();
 
         // Auto-destrucción por tiempo de vida por si no alcanza al jugador
         Destroy(gameObject, tiempoVida);
 
-        // Buscar al jugador automáticamente si no se asignó
+        // Si no se asignó un objetivo, buscar al jugador automáticamente
         if (objetivo == null)
         {
             var controladorJugador = FindFirstObjectByType<FirstPersonController>();
@@ -56,14 +55,28 @@ public class FuegoBuscador : Fuego
                 objetivo = controladorJugador.transform;
             }
         }
+
+        // ── CONFIGURACIÓN FÍSICA AUTOMÁTICA
+        // Asegurar que el collider esté en modo Trigger
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+        {
+            col.isTrigger = true;
+        }
+
+        // Configurar un Rigidbody Cinemático automático para garantizar disparadores físicos
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
+        rb.isKinematic = true;
+        rb.useGravity = false;
     }
 
-    protected override void Update()
+    private void Update()
     {
-        // Ejecutar la lógica de la clase base (Update de regeneración, aunque esté en false)
-        base.Update();
-
-        if (objetivo == null || _yaImpacto || estaExtinguido) return;
+        if (objetivo == null || _yaImpacto) return;
 
         // Calcular dirección hacia el jugador
         Vector3 posicionObjetivo = objetivo.position;
@@ -98,36 +111,33 @@ public class FuegoBuscador : Fuego
         float distancia = Vector3.Distance(posicionActual, posicionObjetivo);
         if (distancia <= distanciaParada)
         {
-            WaterTank tanque = objetivo.GetComponent<WaterTank>() ?? objetivo.GetComponentInParent<WaterTank>();
-            ImpactarJugador(tanque);
+            ImpactarJugador();
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (estaExtinguido || _yaImpacto) return;
-
         // Si el jugador choca físicamente antes de que alcance la distanciaParada
-        WaterTank tanque = other.GetComponent<WaterTank>() ?? other.GetComponentInParent<WaterTank>();
-        if (tanque != null)
+        if (other.GetComponent<WaterTank>() != null || other.GetComponentInParent<WaterTank>() != null)
         {
-            ImpactarJugador(tanque);
+            ImpactarJugador();
         }
     }
 
-    protected override void OnTriggerStay(Collider other)
-    {
-        // El buscador usa impacto instantáneo (OnTriggerEnter y distanciaParada),
-        // así que desactivamos el daño continuo del stay heredado de Fuego para evitar doble daño.
-    }
-
     /// <summary>
-    /// Simula el impacto del fuego contra el jugador y le drena agua de su WaterTank.
+    /// Simula el impacto del fuego contra el jugador y le drena agua.
     /// </summary>
-    private void ImpactarJugador(WaterTank tanque)
+    private void ImpactarJugador()
     {
         if (_yaImpacto) return;
         _yaImpacto = true;
+
+        // Restar agua al jugador si se encuentra disponible
+        WaterTank tanque = null;
+        if (objetivo != null)
+        {
+            tanque = objetivo.GetComponent<WaterTank>() ?? objetivo.GetComponentInParent<WaterTank>();
+        }
 
         if (tanque == null)
         {
@@ -140,43 +150,13 @@ public class FuegoBuscador : Fuego
             Debug.Log($"[FuegoBuscador] Impacto en jugador. Se drenaron {penalizacionAgua} unidades de agua del WaterTank.");
         }
 
-        // Apagar e iniciar desvanecimiento inmediato en impacto
-        ApagarFuegoInmediato();
-    }
-
-    /// <summary>
-    /// Apagado rápido del fuego y detención de partículas al explotar en el jugador.
-    /// </summary>
-    private void ApagarFuegoInmediato()
-    {
-        estaExtinguido = true;
-        transform.localScale = Vector3.zero;
-
-        ParticleSystem[] particulas = GetComponentsInChildren<ParticleSystem>();
+        // Detener partículas suavemente
+        var particulas = GetComponentsInChildren<ParticleSystem>();
         foreach (var ps in particulas)
         {
             if (ps != null) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
 
-        Destroy(gameObject, 0.4f);
-    }
-
-    /// <summary>
-    /// Extinción estándar al ser apagado por agua.
-    /// Sobrescribe el método de la clase base Fuego para tener una destrucción ligeramente más rápida (1.5s).
-    /// </summary>
-    public override void ApagarFuego()
-    {
-        if (estaExtinguido) return;
-        estaExtinguido = true;
-        transform.localScale = Vector3.zero;
-
-        ParticleSystem[] particulas = GetComponentsInChildren<ParticleSystem>();
-        foreach (var ps in particulas)
-        {
-            if (ps != null) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-        }
-
-        Destroy(gameObject, 1.5f);
+        Destroy(gameObject, 0.5f);
     }
 }

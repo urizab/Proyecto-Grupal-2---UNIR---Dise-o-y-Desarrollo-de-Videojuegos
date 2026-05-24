@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -31,12 +31,6 @@ public class WaterHose : MonoBehaviour
 
     private void OnEnable()
     {
-        // Inicializar si es nulo (vital para soportar Hot-Reload de Unity sin lanzar NullReferenceException)
-        if (_inputActions == null)
-        {
-            _inputActions = new PlayerInputActions();
-        }
-
         _inputActions.Player.Enable();
         _inputActions.Player.Fire.performed += OnFireStarted;
         _inputActions.Player.Fire.canceled += OnFireCanceled;
@@ -45,13 +39,10 @@ public class WaterHose : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_inputActions != null)
-        {
-            _inputActions.Player.Fire.performed -= OnFireStarted;
-            _inputActions.Player.Fire.canceled -= OnFireCanceled;
-            _inputActions.Player.Refill.performed -= OnRefillPressed;
-            _inputActions.Player.Disable();
-        }
+        _inputActions.Player.Fire.performed -= OnFireStarted;
+        _inputActions.Player.Fire.canceled -= OnFireCanceled;
+        _inputActions.Player.Refill.performed -= OnRefillPressed;
+        _inputActions.Player.Disable();
     }
 
     // ── CALLBACKS DE INPUT
