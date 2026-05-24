@@ -1,0 +1,8 @@
+Temp/ScriptUpdater/298362247\1075466197_TargetSetupContext.cs => Library/PackageCache/com.unity.shadergraph@6d2ff5988597/Editor/Generation/Contexts/TargetSetupContext.cs
+Temp/ScriptUpdater/298362247\1382892879_BuiltInCanvasSubTarget.cs => Library/PackageCache/com.unity.shadergraph@6d2ff5988597/Editor/Generation/Targets/BuiltIn/Editor/ShaderGraph/Targets/BuiltInCanvasSubTarget.cs
+Temp/ScriptUpdater/298362247\669131080_ShaderSpliceUtil.cs => Library/PackageCache/com.unity.shadergraph@6d2ff5988597/Editor/Generation/Processors/ShaderSpliceUtil.cs
+Temp/ScriptUpdater/298362247\226251111_CustomRenderTextureTarget.cs => Library/PackageCache/com.unity.shadergraph@6d2ff5988597/Editor/Generation/Targets/CustomRenderTexture/CustomRenderTextureTarget.cs
+Temp/ScriptUpdater/298362247\459448998_CustomTextureSubTarget.cs => Library/PackageCache/com.unity.shadergraph@6d2ff5988597/Editor/Generation/Targets/CustomRenderTexture/CustomTextureSubTarget.cs
+Temp/ScriptUpdater/298362247\1053466406_BuiltInLitSubTarget.cs => Library/PackageCache/com.unity.shadergraph@6d2ff5988597/Editor/Generation/Targets/BuiltIn/Editor/ShaderGraph/Targets/BuiltInLitSubTarget.cs
+Temp/ScriptUpdater/298362247\2066027370_BuiltInTarget.cs => Library/PackageCache/com.unity.shadergraph@6d2ff5988597/Editor/Generation/Targets/BuiltIn/Editor/ShaderGraph/Targets/BuiltInTarget.cs
+Temp/ScriptUpdater/298362247\1326889150_FullscreenSubTarget.cs => Library/PackageCache/com.unity.shadergraph@6d2ff5988597/Editor/Generation/Targets/Fullscreen/FullscreenSubTarget.cs
