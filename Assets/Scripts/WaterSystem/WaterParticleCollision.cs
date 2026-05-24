@@ -50,7 +50,7 @@ public class WaterParticleCollision : MonoBehaviour
 
         // Comprueba si el objeto golpeado tiene el script del fuego
         // Sustir "FireScript" por el nombre real del script de Uri
-        var fire = other.GetComponent<FuegoExtinguible>();
+        var fire = other.GetComponent<Fuego>();
 
         if (fire != null)
         {
