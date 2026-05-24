@@ -2417,6 +2417,33 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6984747279474946872, guid: 4b38b1b3e38ed7e499c047067beb6122, type: 3}
   m_PrefabInstance: {fileID: 653434828}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &663263857 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8940405202142092532, guid: 2affcc75aa235dd47b70dc6e6ddea6d0, type: 3}
+  m_PrefabInstance: {fileID: 895631193}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &663263861
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663263857}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7141613317026092019, guid: 45adefe8d28805b479a49f800a11b904, type: 3}
 --- !u!1001 &677304440
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3363,6 +3390,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1956624507}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8940405202142092532, guid: 2affcc75aa235dd47b70dc6e6ddea6d0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 663263861}
     - targetCorrespondingSourceObject: {fileID: 1852883371155182745, guid: 2affcc75aa235dd47b70dc6e6ddea6d0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 417340389}
@@ -8848,7 +8878,7 @@ AudioSource:
   m_Volume: 0.005
   m_Pitch: 1
   Loop: 1
-  Mute: 0
+  Mute: 1
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
