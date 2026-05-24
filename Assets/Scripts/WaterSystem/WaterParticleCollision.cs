@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
@@ -48,17 +48,24 @@ public class WaterParticleCollision : MonoBehaviour
 
         if (count == 0) return;
 
-        // Comprueba si el objeto golpeado tiene el script del fuego
-        // Sustir "FireScript" por el nombre real del script de Uri
-        var fire = other.GetComponent<FuegoExtinguible>();
+        // Comprueba si el objeto golpeado tiene el script de Fuego (cualquier subtipo: FuegoSpawner o FuegoBuscador)
+        Fuego fuego = other.GetComponent<Fuego>();
+        if (fuego == null)
+        {
+            fuego = other.GetComponentInParent<Fuego>();
+        }
+        if (fuego == null)
+        {
+            fuego = other.GetComponentInChildren<Fuego>();
+        }
 
-        if (fire != null)
+        if (fuego != null)
         {
             // Aplicar agua proporcional al número de partículas que impactaron
-            float totalWater = waterPerParticle * count;
-            fire.RecibirAgua(totalWater);
+            float totalAgua = waterPerParticle * count;
+            fuego.RecibirAgua(totalAgua);
 
-            Debug.Log($"[WaterParticleCollision] {count} partículas golpearon {other.name} → {totalWater:F2} agua aplicada.");
+            Debug.Log($"[WaterParticleCollision] {count} partículas golpearon {other.name} → {totalAgua:F2} agua recibida.");
         }
     }
 }
