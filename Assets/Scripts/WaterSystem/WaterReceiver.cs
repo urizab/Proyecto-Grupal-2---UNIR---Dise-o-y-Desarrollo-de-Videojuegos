@@ -52,9 +52,6 @@ public class WaterReceiver : MonoBehaviour
     private bool _activated = false;   // ¿Ya se activó al menos una vez?
     private bool _wasActivated = false;   // Control para repeatable
 
-    // ─────────────────────────────────────────────
-    //  BUCLE PRINCIPAL
-    // ─────────────────────────────────────────────
 
     private void Update()
     {
@@ -72,9 +69,7 @@ public class WaterReceiver : MonoBehaviour
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  API PÚBLICA
-    // ─────────────────────────────────────────────
+    // ── API PÚBLICA
 
     /// <summary>
     /// Añade agua acumulada a este objeto.
