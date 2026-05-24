@@ -15,16 +15,26 @@ public class WaterSource : MonoBehaviour
     [Header("Feedback visual")]
     public GameObject interactPrompt;
 
+    [Header("Brillo emisivo")]
+    [Tooltip("MeshRenderer del objeto fuente. Arrastra aquí el renderer.")]
+    public Renderer sourceRenderer;
+    [Tooltip("Color del brillo cuando el jugador está cerca.")]
+    public Color glowColor = new Color(0f, 0.5f, 1f);
+    [Tooltip("Intensidad máxima del emisivo.")]
+    [Range(0.5f, 4f)] public float glowIntensity = 1.4f;
+    [Tooltip("Velocidad del pulso.")]
+    [Range(0.5f, 6f)] public float pulseSpeed = 2f;
+
     // ── Estado interno
     private WaterTank _playerTank;
     private bool _isRefilling = false;
     private float _remainingSupply;
+    private MaterialPropertyBlock _mpb;
 
     // ── Propiedad pública para que WaterHose sepa si hay jugador cerca
     public bool PlayerInRange => _playerTank != null;
 
     // ── INICIALIZACIÓN
-
     private void Awake()
     {
         GetComponent<Collider>().isTrigger = true;
@@ -32,12 +42,22 @@ public class WaterSource : MonoBehaviour
 
         if (interactPrompt != null)
             interactPrompt.SetActive(false);
+
+        _mpb = new MaterialPropertyBlock();
+        ApplyGlow(Color.black); // emisivo apagado al inicio
     }
 
     // ── BUCLE PRINCIPAL
-
     private void Update()
     {
+        // Pulso emisivo cuando el jugador está en rango
+        if (_playerTank != null)
+        {
+            float t = (Mathf.Sin(Time.time * pulseSpeed) + 1f) * 0.5f; // oscila 0..1
+            float intensity = Mathf.Lerp(glowIntensity * 0.25f, glowIntensity, t);
+            ApplyGlow(glowColor * intensity);
+        }
+
         if (_playerTank == null) return;
 
         // Parar si el tanque se llenó
@@ -60,8 +80,7 @@ public class WaterSource : MonoBehaviour
         }
     }
 
-    // ─── API PÚBLICA 
-
+    // ─── API PÚBLICA
     /// <summary>
     /// WaterHose llama esto cuando el jugador pulsa la tecla Refill
     /// y está dentro del trigger de esta fuente.
@@ -74,7 +93,6 @@ public class WaterSource : MonoBehaviour
     }
 
     // ── TRIGGER DE PROXIMIDAD
-
     private void OnTriggerEnter(Collider other)
     {
         WaterTank tank = other.GetComponent<WaterTank>();
@@ -94,6 +112,7 @@ public class WaterSource : MonoBehaviour
 
         StopRefill();
         _playerTank = null;
+        ApplyGlow(Color.black); // apagar emisivo al salir
 
         if (interactPrompt != null)
             interactPrompt.SetActive(false);
@@ -102,8 +121,6 @@ public class WaterSource : MonoBehaviour
     }
 
     // ── CONTROL DE RECARGA (privado)
-
-
     private void StartRefill()
     {
         if (_playerTank == null || _playerTank.IsFull) return;
@@ -120,8 +137,16 @@ public class WaterSource : MonoBehaviour
         Debug.Log("[WaterSource] Recarga detenida.");
     }
 
-    // ── GIZMOS
+    // ── EMISIVO
+    private void ApplyGlow(Color color)
+    {
+        if (sourceRenderer == null) return;
+        sourceRenderer.GetPropertyBlock(_mpb);
+        _mpb.SetColor("_EmissionColor", color);
+        sourceRenderer.SetPropertyBlock(_mpb);
+    }
 
+    // ── GIZMOS
     private void OnDrawGizmos()
     {
         Gizmos.color = new Color(0f, 0.5f, 1f, 0.15f);
