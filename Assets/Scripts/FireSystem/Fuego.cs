@@ -63,6 +63,11 @@ public class Fuego : MonoBehaviour
     }
     protected LightCache[] _lucesCache;
 
+    // Cache para mantener la colisión del BoxCollider inmune al encogimiento
+    protected BoxCollider _boxCollider;
+    protected Vector3 _originalColliderSize;
+    protected Vector3 _originalColliderCenter;
+
     protected virtual void Start()
     {
         intensidadActual = intensidadMaxima;
@@ -107,6 +112,14 @@ public class Fuego : MonoBehaviour
                 originalIntensity = l.intensity,
                 originalRange = l.range
             };
+        }
+
+        // Obtener el BoxCollider adjunto y registrar su tamaño/centro originales
+        _boxCollider = GetComponent<BoxCollider>();
+        if (_boxCollider != null)
+        {
+            _originalColliderSize = _boxCollider.size;
+            _originalColliderCenter = _boxCollider.center;
         }
     }
 
@@ -185,6 +198,13 @@ public class Fuego : MonoBehaviour
         // Evitamos que la escala física baje del 10% para prevenir que los límites de colisión e iluminación colapsen a 0
         float ratioEscala = Mathf.Max(ratio, 0.1f);
         transform.localScale = escalaOriginal * ratioEscala;
+
+        // Counter-escalar el BoxCollider para que su tamaño real en el mundo permanezca constante y sea fácil de apagar
+        if (_boxCollider != null)
+        {
+            _boxCollider.size = _originalColliderSize / ratioEscala;
+            _boxCollider.center = _originalColliderCenter / ratioEscala;
+        }
 
         // Reducir proporcionalmente el área de emisión (Shape) de cada ParticleSystem
         if (_particulasCache != null)
