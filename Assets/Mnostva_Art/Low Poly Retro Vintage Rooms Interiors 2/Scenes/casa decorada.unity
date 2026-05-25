@@ -1191,7 +1191,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -17215,12 +17215,16 @@ PrefabInstance:
       value: 1.01
       objectReference: {fileID: 0}
     - target: {fileID: 4045409764870639260, guid: 3bf49d73ad6d3b14da1a0febc4122185, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.85167
+      objectReference: {fileID: 0}
+    - target: {fileID: 4045409764870639260, guid: 3bf49d73ad6d3b14da1a0febc4122185, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 0.49415
       objectReference: {fileID: 0}
     - target: {fileID: 4045409764870639260, guid: 3bf49d73ad6d3b14da1a0febc4122185, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.6
+      value: 0.149
       objectReference: {fileID: 0}
     - target: {fileID: 4084144927499889272, guid: 3bf49d73ad6d3b14da1a0febc4122185, type: 3}
       propertyPath: m_LocalPosition.x
@@ -21384,7 +21388,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -24086,7 +24090,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -27147,7 +27151,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
