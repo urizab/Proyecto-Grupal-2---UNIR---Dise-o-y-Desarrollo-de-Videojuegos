@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class FirstPersonController : MonoBehaviour
@@ -21,14 +21,23 @@ public class FirstPersonController : MonoBehaviour
     [Tooltip("Agua que se consume al hacer el doble salto.")]
     public float waterDrainOnDoubleJump = 100f;
 
+    // ── PROPIEDADES DE PROPULSIÓN POR AGUA (JETPACK)
+    [Header("Propulsión por Agua (Jetpack)")]
+    [Tooltip("Velocidad constante en 3D aplicada al jugador en dirección contraria a la cámara mientras propulsa con agua en el aire.")]
+    public float waterPropulsionSpeed = 3f;
+    [Tooltip("Umbral de inclinación requerido para flotar. 1.0 es mirar 100% vertical abajo, 0.95 es mirar casi totalmente abajo (aprox. 72 grados).")]
+    [Range(0.5f, 1.0f)]
+    public float hoverAngleThreshold = 0.95f;
+
     // ── REFERENCIAS PRIVADAS
     private PlayerInputActions _inputActions;       // Sistema de input del jugador
     private CharacterController _characterController; // Componente de movimiento del personaje
     private WaterTank _waterTank;                   // Almacenaje de agua y tal
+    private WaterHose _waterHose;                   // Referencia al disparador de agua
 
     // ── VARIABLES DE ESTADO
     private Vector2 _movement;          // Dirección de movimiento (WASD)
-    private Vector2 _velocity;          // Velocidad acumulada ( .y para la gravedad)
+    private Vector3 _velocity;          // Velocidad acumulada (3D para soportar retroceso de agua y gravedad)
     private Vector2 _look;              // Dirección del ratón
     private float _currentRotationY;   // Rotación vertical actual de la cámara
 
@@ -43,9 +52,12 @@ public class FirstPersonController : MonoBehaviour
         _inputActions = new PlayerInputActions();
         _characterController = GetComponent<CharacterController>();
         _waterTank = GetComponent<WaterTank>();
+        _waterHose = GetComponent<WaterHose>();
 
         if (_waterTank == null)
             Debug.LogWarning("[FirstPersonController] No se encontró WaterTank en el Player.");
+        if (_waterHose == null)
+            Debug.LogWarning("[FirstPersonController] No se encontró WaterHose en el Player.");
     }
 
     private void Start()
@@ -92,13 +104,51 @@ public class FirstPersonController : MonoBehaviour
         if (_isGrounded && _velocity.y < 0)
         {
             _velocity.y = -2f;
+            _velocity.x = 0f;
+            _velocity.z = 0f;
             _hasDoubleJumped = false;   // Resetear el doble salto al tocar el suelo
         }
 
-        // Acumular gravedad con el tiempo
-        _velocity.y += gravity * Time.deltaTime;
+        // Comprobar si estamos en el aire y disparando para aplicar el recoil del jetpack
+        bool estaPropulsando = !_isGrounded && _waterHose != null && _waterHose.IsFiring;
 
-        // Aplicar velocidad vertical al personaje
+        if (estaPropulsando)
+        {
+            // Calcular la velocidad de retroceso directa (dirección opuesta a la cámara)
+            Vector3 recoilDirection = -cameraTransform.forward;
+            Vector3 recoil = recoilDirection * waterPropulsionSpeed;
+
+            // Activar la flotación vertical únicamente si apuntamos casi verticalmente hacia abajo
+            if (recoilDirection.y >= hoverAngleThreshold)
+            {
+                // Aplicar la velocidad constante vertical de propulsión (anulando la gravedad para poder flotar/ascender)
+                _velocity.y = recoil.y;
+            }
+            else
+            {
+                // Si apunta de forma horizontal o hacia arriba, la gravedad sigue actuando normalmente
+                _velocity.y += gravity * Time.deltaTime;
+            }
+
+            // Aplicar velocidad constante horizontal según el retroceso direccional
+            _velocity.x = recoil.x;
+            _velocity.z = recoil.z;
+        }
+        else
+        {
+            // Acumular gravedad normal con el tiempo si no se está propulsando
+            _velocity.y += gravity * Time.deltaTime;
+
+            // Limitar velocidad máxima de caída libre por seguridad física
+            if (_velocity.y < -20f) _velocity.y = -20f;
+
+            // Desacelerar suavemente cualquier inercia horizontal residual del retroceso de agua al no propulsarse
+            float desaceleracionInercia = _isGrounded ? 25f : 2f;
+            _velocity.x = Mathf.MoveTowards(_velocity.x, 0f, desaceleracionInercia * Time.deltaTime);
+            _velocity.z = Mathf.MoveTowards(_velocity.z, 0f, desaceleracionInercia * Time.deltaTime);
+        }
+
+        // Aplicar velocidad acumulada (3D) al personaje
         _characterController.Move(_velocity * Time.deltaTime);
     }
 
