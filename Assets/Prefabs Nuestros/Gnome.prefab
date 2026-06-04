@@ -66,6 +66,8 @@ GameObject:
   - component: {fileID: 895491746170259237}
   - component: {fileID: 5357591897498423283}
   - component: {fileID: 759432835957067455}
+  - component: {fileID: 3674223582974604023}
+  - component: {fileID: 9041390962183892183}
   m_Layer: 0
   m_Name: Gnome
   m_TagString: Untagged
@@ -189,3 +191,44 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.52, y: 0.966263, z: 0.51}
   m_Center: {x: -0.015, y: 0.48285726, z: 0.13}
+--- !u!54 &3674223582974604023
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2673026368778084736}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
+--- !u!114 &9041390962183892183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2673026368778084736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efbbb21a461f3f345a185ba3872a0e83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GnomeJump
+  jumpForce: 1.5
+  jumpCooldown: 0.8
