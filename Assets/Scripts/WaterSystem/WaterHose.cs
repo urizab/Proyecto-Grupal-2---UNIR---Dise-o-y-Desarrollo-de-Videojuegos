@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -20,6 +20,9 @@ public class WaterHose : MonoBehaviour
     private WaterTank _tank;
     private PlayerInputActions _inputActions;
     private bool _isFiring = false;
+
+    // Propiedad pública para saber si se está disparando agua activamente
+    public bool IsFiring => _isFiring && _tank != null && !_tank.IsEmpty;
 
     // ── INICIALIZACIÓN
 
