@@ -359,7 +359,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.44, y: 1.71, z: 2.53}
+  m_Size: {x: 2.44, y: 2.71, z: 2.53}
   m_Center: {x: 0.033469558, y: 0, z: -0.08203328}
 --- !u!114 &6553801870121997840
 MonoBehaviour:
@@ -487,13 +487,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3441049757451730741}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6580e9786e8ca3847a15f1010c010e5c, type: 3}
+  m_Script: {fileID: 11500000, guid: 201380207d7653f45ac3a045db0f9c40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SonidoFuego
-  fuegoSonido: {fileID: 8300000, guid: dacb0c993e4f09a41a124258393ab0ee, type: 3}
-  volumenMaximo: 0.512
-  distanciaMinima: 1
-  distanciaMaxima: 5
+  fuegoSonido: {fileID: 0}
+  volumenMaximo: 1
+  distanciaMinima: 2
+  distanciaMaxima: 15
 --- !u!4 &4549192013683961687 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 366398508269011731, guid: 5334360cd0cfad84bbf6855beaf10de4, type: 3}
